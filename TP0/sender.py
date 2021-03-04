@@ -1,6 +1,6 @@
 import socket
 import os 
-from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import hashes, hmac
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.ciphers import (
@@ -8,16 +8,15 @@ from cryptography.hazmat.primitives.ciphers import (
 )
 
 
+######## Estabelecer conexão 
 s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host=socket.gethostname()
 port=7635
-
 s.bind((host, port))
 s.listen(1)
-
 con, addr = s.accept()
 print('connected with ', addr)
-
+########################
 
 
 ########## KDF
@@ -32,40 +31,47 @@ kdf = PBKDF2HMAC(
 key = kdf.derive(b"my great password")
 ##############
 
+#### Assinatura da chave 
+h = hmac.HMAC(key, hashes.SHA256(), backend=default_backend())
+h.update(key)
+sign = h.finalize()
+##########################
 
+# associated data
+associated_data = b'random data'
 
+#### Função de cifragem
 def encrypt(key, plaintext, associated_data):
-
     iv = os.urandom(12)
-
     encryptor = Cipher(
         algorithms.AES(key),
         modes.GCM(iv),
         backend=default_backend()
     ).encryptor()
-
     encryptor.authenticate_additional_data(associated_data)
-
     ciphertext = encryptor.update(plaintext) + encryptor.finalize()
-
     return (iv, ciphertext, encryptor.tag)
+##########################
 
 
-(iv, ciphertext, tag) = encrypt(key, b'boas malta', b'yo')
+(iv, ciphertext, tag) = encrypt(key, b'mensagem secreta', associated_data)
 
 
-print(salt)
+########## Envia ao receiver 
 con.send(salt)
 con.recv(1024)
 
-print(iv)
 con.send(iv)
 con.recv(1024)
 
-print(ciphertext)
 con.send(ciphertext)
 con.recv(1024)
 
-print(tag)
 con.send(tag)
+con.recv(1024)
+
+con.send(associated_data)
+con.recv(1024)
+
+con.send(sign)
 con.recv(1024)
