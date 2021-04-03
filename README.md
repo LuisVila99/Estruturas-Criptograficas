@@ -1,2 +1,2 @@
-# Engenharia Criptografica
+# Estruturas Criptograficas
  Trabalhos de EC
