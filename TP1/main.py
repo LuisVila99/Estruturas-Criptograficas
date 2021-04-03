@@ -11,8 +11,24 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import dsa
 from cryptography.hazmat.primitives.asymmetric import ec
 
+
+#nounces_usados = []
+
+#def is_in(val, lst):
+#    for a in lst:
+#        if a==val: return True
+#    return False
+
 def nounceGenerator(tam):
-    return os.urandom(tam)
+#    global nounces_usados
+#    print(nounces_usados)
+#    x = nounces_usados
+    r = os.urandom(tam)
+#    while(is_in(r, nounces_usados)):
+#        r = os.urandom(tam)
+#    x.append(r)
+#    nounces_usados = x
+    return r
 
 
 def cifragem(plaintext):
@@ -106,9 +122,9 @@ def receiver(conn):
 
 if __name__ == '__main__':
     parent_conn, child_conn = multiprocessing.Pipe()
-
+    
     while True:
-
+        
         print("Write a message!!!")
 
         msg = msg = bytes(input(), 'utf-8')
