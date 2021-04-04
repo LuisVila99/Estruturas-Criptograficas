@@ -12,22 +12,30 @@ from cryptography.hazmat.primitives.asymmetric import dsa
 from cryptography.hazmat.primitives.asymmetric import ec
 
 
-#nounces_usados = []
 
-#def is_in(val, lst):
-#    for a in lst:
-#        if a==val: return True
-#    return False
+
+def is_in(val, lst):
+    for a in lst:
+        if a==val: return True
+    return False
 
 def nounceGenerator(tam):
-#    global nounces_usados
-#    print(nounces_usados)
-#    x = nounces_usados
+
+    with open('./used.log', 'r') as fr:
+        nounces_usados = fr.readlines()
+        fr.close()
+    
+    print(nounces_usados)
+
     r = os.urandom(tam)
-#    while(is_in(r, nounces_usados)):
-#        r = os.urandom(tam)
-#    x.append(r)
-#    nounces_usados = x
+    while(is_in(str(r), nounces_usados)):
+        r = os.urandom(tam)
+
+    with open('./used.log', 'a') as fw:
+        fw.write(str(r))
+        fw.write('\n')
+        fw.close()
+
     return r
 
 
