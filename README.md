@@ -1,2 +1,2 @@
 # Estruturas Criptograficas
- Trabalhos de EC
+ Trabalhos da cadeira EC
