@@ -25,7 +25,7 @@ def nounceGenerator(tam):
         nounces_usados = fr.readlines()
         fr.close()
     
-    print(nounces_usados)
+    #print(nounces_usados)
 
     r = os.urandom(tam)
     while(is_in(str(r), nounces_usados)):
